@@ -40,11 +40,11 @@ abstract class PrinterIntegrationTestBase {
                 "hu.mktiti.test", "MyObject", "whatever", PrinterConf.Visibility.PUBLIC, false
         ), TEST_MAP);
 
-        testField(resClass, "version", "1.0");
+        testField(resClass, "version", 1.0F);
         testField(resClass, "foo", "bar");
     }
 
-    private void testField(final Class<?> resClass, final String fieldName, final String value) throws Exception {
+    private void testField(final Class<?> resClass, final String fieldName, final Object value) throws Exception {
         final Field field = resClass.getField(fieldName);
         logger.info("Testing field [" + fieldName + "] static modifier...");
         assertTrue("Field not static", Modifier.isStatic(field.getModifiers()));
@@ -57,11 +57,11 @@ abstract class PrinterIntegrationTestBase {
                 "hu.mktiti.test", "MyObject", "whatever", PrinterConf.Visibility.PUBLIC, true
         ), TEST_MAP);
 
-        testGetter(resClass, "getVersion", "1.0");
+        testGetter(resClass, "getVersion", 1.0F);
         testGetter(resClass, "getFoo", "bar");
     }
 
-    private void testGetter(final Class<?> resClass, final String getterName, final String value) throws Exception {
+    private void testGetter(final Class<?> resClass, final String getterName, final Object value) throws Exception {
         final Method getter = resClass.getMethod(getterName);
         logger.info("Testing getter [" + getterName + "] static modifier...");
         assertTrue("Getter not static", Modifier.isStatic(getter.getModifiers()));

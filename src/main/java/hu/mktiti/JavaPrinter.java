@@ -3,6 +3,10 @@ package hu.mktiti;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import static hu.mktiti.TypeUtilityKt.numberJavaCode;
+import static hu.mktiti.TypeUtilityKt.toNumberOrNull;
+import static hu.mktiti.TypeUtilityKt.numberParsedJavaTypeName;
+
 final class JavaPrinter implements ConstPrinter {
 
     private final PrinterConf conf;
@@ -74,15 +78,37 @@ final class JavaPrinter implements ConstPrinter {
     }
 
     private static String getterString(final String name, final String value, final PrinterConf.Visibility visibility) {
-        return
-            "\t" + memberVisibilityString(visibility) + "static String " + Util.getGetterName(name) + "() {\n" +
-            "\t\treturn " + Util.escapeString(value) + ";\n" +
-            "\t}\n";
+        Number number = toNumberOrNull(value);
+        NumberTypes numberType = numberParsedJavaTypeName(value);
+        String typeDef = ((numberType == null ? "String" : numberType.getJavaTypeName()) + " ");
+        String codeValue = numberType == null || number == null
+                ? Util.escapeString(value)
+                : numberJavaCode(number, numberType);
+        return "\t"
+                + memberVisibilityString(visibility)
+                + "static "
+                + typeDef
+                + Util.getGetterName(name) + "() {\n"
+                + "\t\treturn "
+                + codeValue
+                + ";\n"
+                + "\t}\n";
     }
 
     private static String memberString(final String name, final String value, final PrinterConf.Visibility visibility) {
-        return
-            "\t" + memberVisibilityString(visibility) + "static final String " + name + " = " + Util.escapeString(value) + ";\n";
+        Number number = toNumberOrNull(value);
+        NumberTypes numberType = numberParsedJavaTypeName(value);
+        String typeDef = ((numberType == null ? "String" : numberType.getJavaTypeName()) + " ");
+        String codeValue = numberType == null || number == null
+                ? Util.escapeString(value)
+                : numberJavaCode(number, numberType);
+        return "\t"
+                + memberVisibilityString(visibility)
+                + "static final "
+                + typeDef
+                + name
+                + " = "
+                + codeValue
+                + ";\n";
     }
-
 }

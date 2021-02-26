@@ -3,6 +3,8 @@ package hu.mktiti;
 import java.io.PrintWriter;
 import java.util.Map;
 
+import static hu.mktiti.TypeUtilityKt.*;
+
 final class KotlinPrinter implements ConstPrinter {
 
     private final PrinterConf conf;
@@ -68,11 +70,36 @@ final class KotlinPrinter implements ConstPrinter {
     }
 
     private String propertyFieldString(final String name, final String value) {
-        return "\t@JvmField " + visibilityString(conf.visibility)  + "val " + name + ": String = " + Util.escapeString(value) + "\n";
+        Number number = toNumberOrNull(value);
+        NumberTypes numberType = numberParsedJavaTypeName(value);
+        String typeDef = ((numberType == null ? "String" : numberType.getKotlinTypeName()) + " ");
+        String codeValue = numberType == null || number == null
+                ? Util.escapeString(value)
+                : numberJavaCode(number, numberType);
+        return "\t@JvmField "
+                + visibilityString(conf.visibility)
+                + "val "
+                + name
+                + ": " + typeDef + " = "
+                + codeValue
+                + "\n";
     }
 
     private String propertyGetterString(final String name, final String value) {
-        return "\t@JvmStatic @get:JvmName(\"" + Util.getGetterName(name) + "\") "
-                + visibilityString(conf.visibility)  + "val " + name + ": String = " + Util.escapeString(value) + "\n";
+        Number number = toNumberOrNull(value);
+        NumberTypes numberType = numberParsedJavaTypeName(value);
+        String typeDef = ((numberType == null ? "String" : numberType.getKotlinTypeName()) + " ");
+        String codeValue = numberType == null || number == null
+                ? Util.escapeString(value)
+                : numberJavaCode(number, numberType);
+
+        return "\t@JvmStatic @get:JvmName(\""
+                + Util.getGetterName(name) + "\") "
+                + visibilityString(conf.visibility)
+                + "val "
+                + name
+                + ":" + typeDef + " = "
+                + codeValue
+                + "\n";
     }
 }
