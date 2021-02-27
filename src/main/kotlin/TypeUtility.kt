@@ -1,5 +1,3 @@
-package hu.mktiti
-
 fun String.toNumberOrNull(): Number? {
     return toIntOrNull() ?: toLongOrNull() ?: toFloatOrNull() ?: toDoubleOrNull();
 }

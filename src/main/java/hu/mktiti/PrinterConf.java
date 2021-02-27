@@ -19,5 +19,4 @@ final class PrinterConf {
         this.visibility = visibility;
         this.useGetters = useGetters;
     }
-
 }

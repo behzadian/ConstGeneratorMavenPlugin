@@ -3,10 +3,6 @@ package hu.mktiti;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import static hu.mktiti.TypeUtilityKt.numberJavaCode;
-import static hu.mktiti.TypeUtilityKt.toNumberOrNull;
-import static hu.mktiti.TypeUtilityKt.numberParsedJavaTypeName;
-
 final class JavaPrinter implements ConstPrinter {
 
     private final PrinterConf conf;
@@ -78,37 +74,27 @@ final class JavaPrinter implements ConstPrinter {
     }
 
     private static String getterString(final String name, final String value, final PrinterConf.Visibility visibility) {
-        Number number = toNumberOrNull(value);
-        NumberTypes numberType = numberParsedJavaTypeName(value);
-        String typeDef = ((numberType == null ? "String" : numberType.getJavaTypeName()) + " ");
-        String codeValue = numberType == null || number == null
-                ? Util.escapeString(value)
-                : numberJavaCode(number, numberType);
+        ParsedNumber number = ParsedNumber.parse(value);
         return "\t"
                 + memberVisibilityString(visibility)
                 + "static "
-                + typeDef
+                + ParsedNumber.type(number) + " "
                 + Util.getGetterName(name) + "() {\n"
                 + "\t\treturn "
-                + codeValue
+                + ParsedNumber.value(number, value)
                 + ";\n"
                 + "\t}\n";
     }
 
     private static String memberString(final String name, final String value, final PrinterConf.Visibility visibility) {
-        Number number = toNumberOrNull(value);
-        NumberTypes numberType = numberParsedJavaTypeName(value);
-        String typeDef = ((numberType == null ? "String" : numberType.getJavaTypeName()) + " ");
-        String codeValue = numberType == null || number == null
-                ? Util.escapeString(value)
-                : numberJavaCode(number, numberType);
+        ParsedNumber number = ParsedNumber.parse(value);
         return "\t"
                 + memberVisibilityString(visibility)
                 + "static final "
-                + typeDef
+                + ParsedNumber.type(number) + " "
                 + name
                 + " = "
-                + codeValue
+                + ParsedNumber.value(number, value)
                 + ";\n";
     }
 }

@@ -3,8 +3,6 @@ package hu.mktiti;
 import java.io.PrintWriter;
 import java.util.Map;
 
-import static hu.mktiti.TypeUtilityKt.*;
-
 final class KotlinPrinter implements ConstPrinter {
 
     private final PrinterConf conf;
@@ -70,36 +68,26 @@ final class KotlinPrinter implements ConstPrinter {
     }
 
     private String propertyFieldString(final String name, final String value) {
-        Number number = toNumberOrNull(value);
-        NumberTypes numberType = numberParsedJavaTypeName(value);
-        String typeDef = ((numberType == null ? "String" : numberType.getKotlinTypeName()) + " ");
-        String codeValue = numberType == null || number == null
-                ? Util.escapeString(value)
-                : numberJavaCode(number, numberType);
+        ParsedNumber number = ParsedNumber.parse(value);
         return "\t@JvmField "
                 + visibilityString(conf.visibility)
                 + "val "
                 + name
-                + ": " + typeDef + " = "
-                + codeValue
+                + ": " + ParsedNumber.type(number) + " = "
+                + ParsedNumber.value(number, value)
                 + "\n";
     }
 
     private String propertyGetterString(final String name, final String value) {
-        Number number = toNumberOrNull(value);
-        NumberTypes numberType = numberParsedJavaTypeName(value);
-        String typeDef = ((numberType == null ? "String" : numberType.getKotlinTypeName()) + " ");
-        String codeValue = numberType == null || number == null
-                ? Util.escapeString(value)
-                : numberJavaCode(number, numberType);
+        ParsedNumber number = ParsedNumber.parse(value);
 
         return "\t@JvmStatic @get:JvmName(\""
                 + Util.getGetterName(name) + "\") "
                 + visibilityString(conf.visibility)
                 + "val "
                 + name
-                + ":" + typeDef + " = "
-                + codeValue
+                + ":" + ParsedNumber.type(number) + " = "
+                + ParsedNumber.value(number, value)
                 + "\n";
     }
 }
